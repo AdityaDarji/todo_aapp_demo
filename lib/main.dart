@@ -1,5 +1,8 @@
+import 'package:provider/provider.dart';
+
 import 'package:flutter/material.dart';
 import 'package:todo_app_demo/view/todo_list_screen.dart';
+import 'package:todo_app_demo/viewmodel/todo_viewmodel.dart';
 
 void main() {
   runApp(MyApp());
@@ -34,7 +37,10 @@ class MyApp extends StatelessWidget {
           ),
           themeMode: currentMode,
           debugShowCheckedModeBanner: false,
-          home: TodoListScreen(),
+          home: ChangeNotifierProvider(
+            create: (_) => TodoViewmodel(),
+            child: TodoListScreen(),
+          ),
         );
       },
     );

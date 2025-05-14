@@ -1,20 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app_demo/main.dart';
+import 'package:todo_app_demo/view/add_task_dialog.dart';
 //import 'package:todo_app_demo/model/todo_model.dart';
+import 'package:provider/provider.dart';
 import 'package:todo_app_demo/viewmodel/todo_viewmodel.dart';
 
-class TodoListScreen extends StatefulWidget {
+/*
+void _showAddTaskDialog(
+  BuildContext context,
+  TextEditingController controller,
+  VoidCallback onAdd,
+) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AddTaskDialog(controller: controller, onAdd: onAdd);
+    },
+  );
+}*/
+
+class TodoListScreen extends StatelessWidget {
+  //final TodoViewmodel _viewmodel = TodoViewmodel();
+
   const TodoListScreen({super.key});
 
   @override
-  State<StatefulWidget> createState() => _TodoListScreenState();
-}
-
-class _TodoListScreenState extends State<TodoListScreen> {
-  final TodoViewmodel _viewmodel = TodoViewmodel();
-
-  @override
   Widget build(BuildContext context) {
+    final viewModel = Provider.of<TodoViewmodel>(context);
+
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
@@ -24,10 +37,8 @@ class _TodoListScreenState extends State<TodoListScreen> {
             icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode),
             tooltip: "Toggle Theme",
             onPressed: () {
-              setState(() {
-                MyApp.themeNotifier.value =
-                    isDark ? ThemeMode.light : ThemeMode.dark;
-              });
+              MyApp.themeNotifier.value =
+                  isDark ? ThemeMode.light : ThemeMode.dark;
             },
           ),
         ],
@@ -48,9 +59,9 @@ class _TodoListScreenState extends State<TodoListScreen> {
           ),
 
           ListView.builder(
-            itemCount: _viewmodel.todos.length,
+            itemCount: viewModel.todos.length,
             itemBuilder: (context, index) {
-              final todo = _viewmodel.todos[index];
+              final todo = viewModel.todos[index];
               return ListTile(
                 leading: Icon(
                   todo.isdone ? Icons.check_box : Icons.check_box_outline_blank,
@@ -63,14 +74,25 @@ class _TodoListScreenState extends State<TodoListScreen> {
                   ),
                 ),
                 onTap: () {
-                  setState(() {
-                    _viewmodel.toggleTodoStatus(index);
-                  });
+                  viewModel.toggleTodoStatus(index);
                 },
               );
             },
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder:
+                (_) => AddTaskDialog(
+                  controller: viewModel.taskController,
+                  onAdd: viewModel.addTasks,
+                ),
+          );
+        },
+        child: Icon(Icons.add),
       ),
     );
   }
